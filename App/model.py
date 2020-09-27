@@ -38,15 +38,85 @@ es decir contiene los modelos con los datos en memoria
 # API del TAD Catalogo de accidentes
 # -----------------------------------------------------
 
+def newAnalyzer():
+    analyzer = {'Accidents': None,
+                'dateIndex': None}
+    analyzer['Accidents'] = lt.newList('SINGLE_LINKED', compareIds)
+    analyzer['dateIndex'] = om.newMap(omaptype='BST',
+                                      comparefunction=compareDates)
+    return analyzer
 
 # Funciones para agregar informacion al catalogo
 
+def addAccident(analyzer, accident):
+    lt.addLast(analyzer['Accidents'], accident)
+    updateDateIndex(analyzer['dateIndex'], accident)
+    return analyzer
+
+
+def updateDateIndex(map, accident):
+    occurreddate = accident['Start_Time']
+    accidentdate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S')
+    entry = om.get(map, accidentdate.date())
+    if entry is None:
+        datentry = newDataEntry(accident)
+        om.put(map, accidentdate.date(), datentry)
+    else:
+        datentry = me.getValue(entry)
+    addDateIndex(datentry, accident)
+    return map
+
+
+def addDateIndex(datentry, accident):
+    lst = datentry['lstaccidents']
+    lt.addLast(lst, accident)
+    return datentry
+
+
+def newDataEntry(accident):
+    """
+    Crea una entrada en el indice por fechas, es decir en el arbol
+    binario.
+    """
+    entry = {'lstaccidents': None}
+    entry['lstaccidents'] = lt.newList('SINGLE_LINKED', compareDates)
+    return entry
 
 # ==============================
 # Funciones de consulta
 # ==============================
 
+def accidentsSize(analyzer):
+    return lt.size(analyzer['Accidents'])
+
+def indexSize(analyzer):
+    return om.size(analyzer['dateIndex'])
+
+def AccidentsByDate (analyzer,date):
+    tupla=()
+    fecha=om.get(analyzer['dateIndex'],date)
+    lista_fecha=fecha['value']
+    severidad=[]
+    severidad.append(lt.getElement(lista_fecha,4))
+    tupla=("Cantidad:"+str(lt.size(lista_fecha)),severidad)
+    return tupla
 
 # ==============================
 # Funciones de Comparacion
 # ==============================
+def compareIds(id1, id2):
+    if (id1 == id2):
+        return 0
+    elif id1 > id2:
+        return 1
+    else:
+        return -1
+
+
+def compareDates(date1, date2):
+    if (date1 == date2):
+        return 0
+    elif (date1 > date2):
+        return 1
+    else:
+        return -1
