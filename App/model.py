@@ -92,13 +92,21 @@ def accidentsSize(analyzer):
 def indexSize(analyzer):
     return om.size(analyzer['dateIndex'])
 
-def AccidentsByDate (analyzer,date):
+def AccidentsByDate (analyzer,fecha):
     tupla=()
-    fecha=om.get(analyzer['dateIndex'],date)
-    lista_fecha=fecha['value']
+    fecha_acc=datetime.datetime.strptime(fecha,'%Y-%m-%d')
+    fecha1=om.get(analyzer['dateIndex'],fecha_acc.date())
+    lista_fecha=fecha1['value']
+    a=lista_fecha['lstaccidents']
+    b=lt.size(a)
     severidad=[]
-    severidad.append(lt.getElement(lista_fecha,4))
-    tupla=("Cantidad:"+str(lt.size(lista_fecha)),severidad)
+    i=1
+    while i<=b:
+        getter=lt.getElement(a,i)
+        severidad_num=getter['Severity']
+        severidad.append(severidad_num)
+        i+=1
+    tupla=("Cantidad:"+str(b),"Severidad en cada caso:",severidad)
     return tupla
 
 # ==============================
