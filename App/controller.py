@@ -42,8 +42,8 @@ def init():
     """
     Llama la funcion de inicializacion del modelo.
     """
-
-    return None
+    analyzer = model.newAnalyzer()
+    return analyzer
 
 
 # ___________________________________________________
@@ -51,13 +51,30 @@ def init():
 #  de datos en los modelos
 # ___________________________________________________
 
-def loadData(analyzer, accidentsfile):
+def loadData(analyzer, accident_file):
     """
     Carga los datos de los archivos CSV en el modelo
     """
-    
+    accident_file = cf.data_dir + accident_file
+    input_file = csv.DictReader(open(accident_file, encoding="utf-8"),
+                                delimiter=",")
+    for accident in input_file:
+        model.addAccident(analyzer, accident)
     return analyzer
+
 
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
+
+def getAccidentsSize(analyzer):
+    retorno = model.accidentsSize(analyzer)
+    return retorno
+
+def getIndexSize(analyzer):
+    retorno = model.indexSize(analyzer)
+    return retorno
+    
+def getAccidentsByDate(analyzer, fecha):
+    retorno = model.AccidentsByDate(analyzer, fecha)
+    return retorno
