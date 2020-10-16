@@ -92,6 +92,9 @@ def accidentsSize(analyzer):
 def indexSize(analyzer):
     return om.size(analyzer['dateIndex'])
 
+def indexheight(analyzer):
+    return om.height(analyzer['dateIndex'])
+
 def AccidentsByDate (analyzer,fecha):
     tupla=()
     fecha_acc=datetime.datetime.strptime(fecha,'%Y-%m-%d')
