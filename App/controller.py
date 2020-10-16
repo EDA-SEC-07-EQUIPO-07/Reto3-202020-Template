@@ -74,6 +74,10 @@ def getAccidentsSize(analyzer):
 def getIndexSize(analyzer):
     retorno = model.indexSize(analyzer)
     return retorno
+  
+def getindexheight(analyzer):
+    retorno = model.indexheight(analyzer)
+    return retorno
     
 def getAccidentsByDate(analyzer, fecha):
     retorno = model.AccidentsByDate(analyzer, fecha)
