@@ -73,6 +73,7 @@ while True:
         controller.loadData(cont, accident_file)
         print('Accidentes cargados: ' + str(controller.getAccidentsSize(cont)))
         print('Elementos en el arbol ' + str(controller.getIndexSize(cont))) 
+        print('Altura del arbol: ' + str(controller.getindexheight(cont)))
         
     elif int(inputs[0]) == 3:
         print("\nBuscando accidentes en un rango de fechas: ")
