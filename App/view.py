@@ -38,7 +38,7 @@ operación seleccionada.
 # ___________________________________________________
 
 
-accident_file = 'us_accidents_small.csv'
+accident_file = 'us_accidents_dis_2016.csv'
 
 # ___________________________________________________
 #  Menu principal
@@ -52,6 +52,7 @@ def printMenu():
     print("1- Inicializar Analizador")
     print("2- Cargar información de accidentes")
     print("3- Accidentes ocurridos en una fecha especifica")
+    print("4- Accidentes ocurridos antes de una fecha")
     print("0- Salir")
     print("*******************************************")
 
@@ -73,11 +74,17 @@ while True:
         controller.loadData(cont, accident_file)
         print('Accidentes cargados: ' + str(controller.getAccidentsSize(cont)))
         print('Elementos en el arbol ' + str(controller.getIndexSize(cont))) 
+
         
     elif int(inputs[0]) == 3:
         print("\nBuscando accidentes en un rango de fechas: ")
         Fecha = input('Ingrese la fecha sobre la cual desea saber cuantos accidentes hubo: ')
         print(controller.getAccidentsByDate(cont, Fecha))
+
+    elif int(inputs[0]) == 4:
+        print("\nBuscando accidentes anteriores a una fecha: ")
+        Fecha = input('Ingrese una fecha para saber la cantidad de accidentes y el día con más accidentes anteriores a esa fecha: ')
+        print(controller.getAccidentsBeforeADate(cont, Fecha))
 
     else:
         sys.exit(0)

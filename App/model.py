@@ -109,6 +109,49 @@ def AccidentsByDate (analyzer,fecha):
     tupla=("Cantidad:"+str(b),"Severidad en cada caso:",severidad)
     return tupla
 
+def AccidentsBeforeADate (analyzer,fecha):
+    dictfechatot={'Total accidentes antes de la fecha ingresada:':None,
+                  'Fecha con mas accidentes:':None}
+    fecha_acc=datetime.datetime.strptime(fecha,'%Y-%m-%d')
+    fecha_menor=str(om.minKey(analyzer['dateIndex']))
+    fecha_maxima=str(om.maxKey(analyzer['dateIndex']))
+    fecha_min=datetime.datetime.strptime(fecha_menor,'%Y-%m-%d')
+    fecha_max=datetime.datetime.strptime(fecha_maxima,'%Y-%m-%d')
+    if fecha_min==fecha_acc:
+        return "No hay fechas anteriores a la ingresada"
+    dategetter=om.values(analyzer['dateIndex'],fecha_min.date(),fecha_acc.date())
+    num_fechas=lt.size(dategetter)
+    i=1
+    num_mayor=0
+    total=0
+    accidenteddate=None
+    if fecha_acc>fecha_max:
+        while i<=num_fechas:
+            elements=lt.getElement(dategetter,i)
+            lista=elements['lstaccidents']
+            num_accident=lt.size(lista)
+            total+=num_accident
+            if num_accident>num_mayor:
+                num_mayor=num_accident
+                dates=lt.getElement(lista,1)
+                x=datetime.datetime.strptime(dates['Start_Time'],'%Y-%m-%d %H:%M:%S')
+                accidenteddate=x.date()
+            i+=1
+    else:
+        while i<num_fechas:
+            elements=lt.getElement(dategetter,i)
+            lista=elements['lstaccidents']
+            num_accident=lt.size(lista)
+            total+=num_accident
+            if num_accident>num_mayor:
+                num_mayor=num_accident
+                dates=lt.getElement(lista,1)
+                x=datetime.datetime.strptime(dates['Start_Time'],'%Y-%m-%d %H:%M:%S')
+                accidenteddate=x.date()
+            i+=1
+    dictfechatot['Total accidentes antes de la fecha ingresada:']=total
+    dictfechatot['Fecha con mas accidentes:']=str(accidenteddate)
+    return dictfechatot
 # ==============================
 # Funciones de Comparacion
 # ==============================
