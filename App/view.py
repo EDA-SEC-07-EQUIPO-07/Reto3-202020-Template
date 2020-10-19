@@ -73,7 +73,9 @@ while True:
         print("\nCargando información de accidentes ....")
         controller.loadData(cont, accident_file)
         print('Accidentes cargados: ' + str(controller.getAccidentsSize(cont)))
-        print('Elementos en el arbol ' + str(controller.getIndexSize(cont))) 
+        print('Elementos en el arbol de fechas: ' + str(controller.getIndexSize(cont))) 
+        print('Elementos en el arbol de horas: ' + str(controller.getHourSize(cont)))
+        
 
         
     elif int(inputs[0]) == 3:

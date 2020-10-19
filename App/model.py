@@ -40,10 +40,13 @@ es decir contiene los modelos con los datos en memoria
 
 def newAnalyzer():
     analyzer = {'Accidents': None,
-                'dateIndex': None}
+                'dateIndex': None,
+                'hourIndex':None}
     analyzer['Accidents'] = lt.newList('SINGLE_LINKED', compareIds)
     analyzer['dateIndex'] = om.newMap(omaptype='BST',
                                       comparefunction=compareDates)
+    analyzer['hourIndex'] = om.newMap(omaptype='BST',
+                                      comparefunction=compareHours)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -51,6 +54,7 @@ def newAnalyzer():
 def addAccident(analyzer, accident):
     lt.addLast(analyzer['Accidents'], accident)
     updateDateIndex(analyzer['dateIndex'], accident)
+    updateHourIndex(analyzer['hourIndex'], accident)
     return analyzer
 
 
@@ -67,6 +71,21 @@ def updateDateIndex(map, accident):
     return map
 
 
+def updateHourIndex(map, accident):
+    occurreddate = accident['Start_Time']
+    accidentdate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S')
+    time=str(accidentdate.hour)+':'+str(accidentdate.minute)
+    accidenttime=datetime.datetime.strptime(time,'%H:%M')
+    entry = om.get(map, accidenttime.time())
+    if entry is None:
+        datentry = newDataEntry(accident)
+        om.put(map, accidenttime.time(), datentry)
+    else:
+        datentry = me.getValue(entry)
+    addDateIndex(datentry, accident)
+    return map
+
+
 def addDateIndex(datentry, accident):
     lst = datentry['lstaccidents']
     lt.addLast(lst, accident)
@@ -75,7 +94,7 @@ def addDateIndex(datentry, accident):
 
 def newDataEntry(accident):
     """
-    Crea una entrada en el indice por fechas, es decir en el arbol
+    Crea una entrada en el indice por fechas o por hora, es decir en el arbol
     binario.
     """
     entry = {'lstaccidents': None}
@@ -91,6 +110,9 @@ def accidentsSize(analyzer):
 
 def indexSize(analyzer):
     return om.size(analyzer['dateIndex'])
+    
+def hourSize(analyzer):
+    return om.size(analyzer['hourIndex'])
 
 def AccidentsByDate (analyzer,fecha):
     tupla=()
@@ -108,6 +130,7 @@ def AccidentsByDate (analyzer,fecha):
         i+=1
     tupla=("Cantidad:"+str(b),"Severidad en cada caso:",severidad)
     return tupla
+
 
 def AccidentsBeforeADate (analyzer,fecha):
     dictfechatot={'Total accidentes antes de la fecha ingresada:':None,
@@ -168,6 +191,14 @@ def compareDates(date1, date2):
     if (date1 == date2):
         return 0
     elif (date1 > date2):
+        return 1
+    else:
+        return -1
+
+def compareHours(hour1, hour2):
+    if (hour1 == hour2):
+        return 0
+    elif (hour1 > hour2):
         return 1
     else:
         return -1
