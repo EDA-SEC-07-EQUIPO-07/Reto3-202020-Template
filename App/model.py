@@ -45,7 +45,17 @@ es decir contiene los modelos con los datos en memoria
 # ==============================
 # Funciones de consulta
 # ==============================
-
+def porcentaje (analyzer, dicc):
+    lista = om.valueSet(analyzer ['dateIndex'])
+    total = lt.size(lista)
+    listados = dicc.values()
+    tamaño = len(listados) 
+    v = 0
+    while v< tamaño:
+        suma += listados[v]
+    percent = 100*suma/total  
+    tupla = (dicc, percent)
+    return tupla  
 
 # ==============================
 # Funciones de Comparacion
