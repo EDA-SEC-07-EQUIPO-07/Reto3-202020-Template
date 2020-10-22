@@ -111,6 +111,18 @@ def AccidentsByDate (analyzer,fecha):
         i+=1
     tupla=("Cantidad:"+str(b),"Severidad en cada caso:",severidad)
     return tupla
+   
+ def porcentaje (analyzer, dicc):
+    lista = om.valueSet(analyzer ['dateIndex'])
+    total = lt.size(lista)
+    listados = dicc.values()
+    tamaño = len(listados) 
+    v = 0
+    while v< tamaño:
+        suma += listados[v]
+    percent = 100*suma/total  
+    tupla = (dicc, percent)
+    return tupla  
 
 # ==============================
 # Funciones de Comparacion
