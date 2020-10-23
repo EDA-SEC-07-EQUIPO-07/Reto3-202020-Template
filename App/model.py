@@ -40,10 +40,13 @@ es decir contiene los modelos con los datos en memoria
 
 def newAnalyzer():
     analyzer = {'Accidents': None,
-                'dateIndex': None}
+                'dateIndex': None,
+                'hourIndex':None}
     analyzer['Accidents'] = lt.newList('SINGLE_LINKED', compareIds)
     analyzer['dateIndex'] = om.newMap(omaptype='BST',
                                       comparefunction=compareDates)
+    analyzer['hourIndex'] = om.newMap(omaptype='BST',
+                                      comparefunction=compareHours)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -51,6 +54,7 @@ def newAnalyzer():
 def addAccident(analyzer, accident):
     lt.addLast(analyzer['Accidents'], accident)
     updateDateIndex(analyzer['dateIndex'], accident)
+    updateHourIndex(analyzer['hourIndex'], accident)
     return analyzer
 
 
@@ -67,6 +71,21 @@ def updateDateIndex(map, accident):
     return map
 
 
+def updateHourIndex(map, accident):
+    occurreddate = accident['Start_Time']
+    accidentdate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S')
+    time=str(accidentdate.hour)+':'+str(accidentdate.minute)
+    accidenttime=datetime.datetime.strptime(time,'%H:%M')
+    entry = om.get(map, accidenttime.time())
+    if entry is None:
+        datentry = newDataEntry(accident)
+        om.put(map, accidenttime.time(), datentry)
+    else:
+        datentry = me.getValue(entry)
+    addDateIndex(datentry, accident)
+    return map
+
+
 def addDateIndex(datentry, accident):
     lst = datentry['lstaccidents']
     lt.addLast(lst, accident)
@@ -75,13 +94,12 @@ def addDateIndex(datentry, accident):
 
 def newDataEntry(accident):
     """
-    Crea una entrada en el indice por fechas, es decir en el arbol
+    Crea una entrada en el indice por fechas o por hora, es decir en el arbol
     binario.
     """
     entry = {'lstaccidents': None}
     entry['lstaccidents'] = lt.newList('SINGLE_LINKED', compareDates)
     return entry
-
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -94,6 +112,9 @@ def indexSize(analyzer):
 
 def indexheight(analyzer):
     return om.height(analyzer['dateIndex'])
+
+def hourSize(analyzer):
+    return om.size(analyzer['hourIndex'])
 
 def AccidentsByDate (analyzer,fecha):
     tupla=()
@@ -111,8 +132,52 @@ def AccidentsByDate (analyzer,fecha):
         i+=1
     tupla=("Cantidad:"+str(b),"Severidad en cada caso:",severidad)
     return tupla
+
+def AccidentsBeforeADate (analyzer,fecha):
+    dictfechatot={'Total accidentes antes de la fecha ingresada:':None,
+                  'Fecha con mas accidentes:':None}
+    fecha_acc=datetime.datetime.strptime(fecha,'%Y-%m-%d')
+    fecha_menor=str(om.minKey(analyzer['dateIndex']))
+    fecha_maxima=str(om.maxKey(analyzer['dateIndex']))
+    fecha_min=datetime.datetime.strptime(fecha_menor,'%Y-%m-%d')
+    fecha_max=datetime.datetime.strptime(fecha_maxima,'%Y-%m-%d')
+    if fecha_min==fecha_acc:
+        return "No hay fechas anteriores a la ingresada"
+    dategetter=om.values(analyzer['dateIndex'],fecha_min.date(),fecha_acc.date())
+    num_fechas=lt.size(dategetter)
+    i=1
+    num_mayor=0
+    total=0
+    accidenteddate=None
+    if fecha_acc>fecha_max:
+        while i<=num_fechas:
+            elements=lt.getElement(dategetter,i)
+            lista=elements['lstaccidents']
+            num_accident=lt.size(lista)
+            total+=num_accident
+            if num_accident>num_mayor:
+                num_mayor=num_accident
+                dates=lt.getElement(lista,1)
+                x=datetime.datetime.strptime(dates['Start_Time'],'%Y-%m-%d %H:%M:%S')
+                accidenteddate=x.date()
+            i+=1
+    else:
+        while i<num_fechas:
+            elements=lt.getElement(dategetter,i)
+            lista=elements['lstaccidents']
+            num_accident=lt.size(lista)
+            total+=num_accident
+            if num_accident>num_mayor:
+                num_mayor=num_accident
+                dates=lt.getElement(lista,1)
+                x=datetime.datetime.strptime(dates['Start_Time'],'%Y-%m-%d %H:%M:%S')
+                accidenteddate=x.date()
+            i+=1
+    dictfechatot['Total accidentes antes de la fecha ingresada:']=total
+    dictfechatot['Fecha con mas accidentes:']=str(accidenteddate)
+    return dictfechatot
    
- def porcentaje (analyzer, dicc):
+def porcentaje (analyzer, dicc):
     lista = om.valueSet(analyzer ['dateIndex'])
     total = lt.size(lista)
     listados = dicc.values()
@@ -140,6 +205,15 @@ def compareDates(date1, date2):
     if (date1 == date2):
         return 0
     elif (date1 > date2):
+        return 1
+    else:
+        return -1
+
+
+def compareHours(hour1, hour2):
+    if (hour1 == hour2):
+        return 0
+    elif (hour1 > hour2):
         return 1
     else:
         return -1
