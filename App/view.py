@@ -53,6 +53,9 @@ def printMenu():
     print("2- Cargar información de accidentes")
     print("3- Accidentes ocurridos en una fecha especifica")
     print("4- Accidentes ocurridos antes de una fecha")
+    print("5- Accidentes en un rango de fechas")
+    print("6- Estado con más accidentes")
+    print("7- Accidentes en un rango de horas")
     print("0- Salir")
     print("*******************************************")
 """
@@ -83,6 +86,21 @@ while True:
         print("\nBuscando accidentes anteriores a una fecha: ")
         Fecha = input('Ingrese una fecha para saber la cantidad de accidentes y el día con más accidentes anteriores a esa fecha: ')
         print(controller.getAccidentsBeforeADate(cont, Fecha))
+    elif int(inputs[0]) == 5:
+        print("\nBuscando accidentes en un rango de fechas: ")
+        fecha1 = input('Ingrese una fecha desde la que desea empezar a buscar: ')
+        fecha2 = input('Ingrese una fecha en la que desea dejar de buscar: ')
+        print(controller.getAccidentsInRange(cont, fecha1, fecha2))
+    elif int(inputs[0]) == 6:
+        print("\nBuscando estado con más accidentes: ")
+        fecha1 = input('Ingrese una fecha desde la que desea empezar a buscar: ')
+        fecha2 = input('Ingrese una fecha en la que desea dejar de buscar: ')
+        print(controller.getAccidentsbystate(cont, fecha1, fecha2))
+    elif int(inputs[0]) == 7:
+        print("\nBuscando accidentes en un rango de horas: ")
+        hora1 = input('Ingrese una hora desde la que desea empezar a buscar: ')
+        hora2 = input('Ingrese una hora en la que desea dejar de buscar: ')
+        print(controller.getAccidentsByHour(cont, hora1, hora2))
 
     else:
         sys.exit(0)

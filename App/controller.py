@@ -90,3 +90,15 @@ def getAccidentsByDate(analyzer, fecha):
 def getAccidentsBeforeADate(analyzer, fecha):
     retorno = model.AccidentsBeforeADate(analyzer, fecha)
     return retorno
+
+def getAccidentsInRange(analyzer, fecha_inicio, fecha_fin):
+    retorno = model.AccidentsInRange(analyzer, fecha_inicio, fecha_fin)
+    return retorno
+
+def getAccidentsbystate(analyzer, fecha_inicio, fecha_fin):
+    retorno = model.accidentstate(analyzer, fecha_inicio, fecha_fin)
+    return retorno
+
+def getAccidentsByHour(analyzer, hora_inicio, hora_fin):
+    retorno = model.Accidentesporcategoria(analyzer, hora_inicio, hora_fin)
+    return retorno

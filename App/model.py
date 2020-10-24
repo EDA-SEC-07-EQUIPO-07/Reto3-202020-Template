@@ -176,7 +176,82 @@ def AccidentsBeforeADate (analyzer,fecha):
     dictfechatot['Total accidentes antes de la fecha ingresada:']=total
     dictfechatot['Fecha con mas accidentes:']=str(accidenteddate)
     return dictfechatot
-   
+
+def AccidentsInRange(analyzer, fecha_ini, fecha_fin):
+    dictfechatot={'Total accidentes entre la fecha ingresa:':None,
+                  'Categoría más reportada:':None}
+    fechauno=datetime.datetime.strptime(fecha_ini,'%Y-%m-%d')
+    fechados=datetime.datetime.strptime(fecha_fin,'%Y-%m-%d')
+    fecha_menor=str(om.minKey(analyzer['dateIndex']))
+    fecha_min=datetime.datetime.strptime(fecha_menor,'%Y-%m-%d')
+    if fecha_min>fechados:
+        return "No hay fechas anteriores a la ingresada"
+    dategetter=om.values(analyzer['dateIndex'],fechauno.date(),fechados.date())
+    num_fechas=lt.size(dategetter)
+    i=1
+    num_mayor=0
+    total=0
+    category=0
+    categorias=[]
+    while i<=num_fechas:
+        elements=lt.getElement(dategetter,i)
+        lista=elements['lstaccidents']
+        num_accident=lt.size(lista)
+        total+=num_accident
+        categories=lt.getElement(lista,i)
+        categorias.append(int(categories['Severity']))   
+        if num_accident>num_mayor:
+                num_mayor=num_accident    
+        i += 1
+    category=max(categorias)
+    dictfechatot['Total accidentes entre la fecha ingresada:']=total
+    dictfechatot['Categoría más reportada:']=category
+    return dictfechatot
+
+def Accidentesporcategoria (analyzer, Tinit, Tfin):
+    dicc = {'1': 0, '2': 0, '3': 0, '4': 0}
+    t_min=datetime.datetime.strptime(Tinit,'%H:%M')
+    t_max=datetime.datetime.strptime(Tfin,'%H:%M')
+    dategetter=om.values(analyzer['hourIndex'],t_min.time(),t_max.time())
+    cantidad=lt.size(dategetter)
+    i=1
+    while i <=cantidad:
+        elements=lt.getElement(dategetter,i)
+        lista=elements['lstaccidents']
+        categories=lt.getElement(lista,i)
+        if categories['Severity'] == '1':
+            dicc['1']+=1
+        if categories['Severity'] == '2':
+            dicc['2']+=1
+        if categories['Severity'] == '3':
+            dicc['3']+=1
+        if categories['Severity'] == '4':
+            dicc['4']+=1
+    p = porcentaje(analyzer, dicc)
+    return p
+
+def accidentstate (analyzer, fechamin, fechamax):
+    mapa = om.newMap(omaptype='BST', comparefunction=compareState)
+    valor = om.values(analyzer ['dateIndex'], fechamin.date(), fechamax.date())
+    i = 1
+    fechas = lt.size(valor)
+    while i<= fechas:
+        elementos = lt.getElement(valor, i)
+        accidentes = elementos['lstaccidents']
+        tamaño = lt.size(accidentes)
+        j = 1
+        while j<= tamaño:
+            caja = lt.getElement(accidentes, j)
+            estado = caja['State']
+            condicion = om.contains(mapa, estado)
+            if condicion == False: 
+                om.put(mapa, estado, 1)
+            else:
+                om.put(mapa, estado, +1)
+            om.keySet
+            j += 1
+        i += 1
+
 def porcentaje (analyzer, dicc):
     lista = om.valueSet(analyzer ['dateIndex'])
     total = lt.size(lista)
