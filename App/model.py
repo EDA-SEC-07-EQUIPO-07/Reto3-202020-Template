@@ -45,6 +45,30 @@ es decir contiene los modelos con los datos en memoria
 # ==============================
 # Funciones de consulta
 # ==============================
+def accidentstate (analyzer, fechamin, fechamax):
+    mapa = om.newMap(omaptype='BST', comparefunction=compareState)
+    valor = om.values(analyzer ['dateIndex'], fechamin.date(), fechamax.date())
+    i = 1
+    fechas = lt.size(valor)
+    while i<= fechas:
+        elementos = lt.getElement(valor, i)
+        accidentes = elementos['lstaccidents']
+        tamaño = lt.size(accidentes)
+        j = 1
+        while j<= tamaño:
+            caja = lt.getElement(accidentes, j)
+            estado = caja['State']
+            condicion = om.contains(mapa, estado)
+            if condicion == False: 
+                om.put(mapa, estado, 1)
+            else:
+                om.put(mapa, estado, +1)
+            om.keySet
+            j += 1
+        i += 1
+    
+
+            
 def porcentaje (analyzer, dicc):
     lista = om.valueSet(analyzer ['dateIndex'])
     total = lt.size(lista)
@@ -60,3 +84,12 @@ def porcentaje (analyzer, dicc):
 # ==============================
 # Funciones de Comparacion
 # ==============================
+
+def compareState(name, State):
+    stateEntry = me.getKey(state)
+    if name == stateEntry:
+        return 0
+    elif name > stateEntry:
+        return 1
+    else:
+        return -1
