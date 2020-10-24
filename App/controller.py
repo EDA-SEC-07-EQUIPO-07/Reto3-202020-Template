@@ -61,3 +61,6 @@ def loadData(analyzer, accidentsfile):
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
+def getAccidentstate(analyzer):
+    retorno = model.accidentstate(analyzer)
+    return retorno
