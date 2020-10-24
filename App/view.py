@@ -38,7 +38,7 @@ operación seleccionada.
 # ___________________________________________________
 
 
-crimefile = 'crime-utf8.csv'
+accident_file = 'us_accidents_small.csv'
 
 # ___________________________________________________
 #  Menu principal
@@ -51,12 +51,11 @@ def printMenu():
     print("Bienvenido")
     print("1- Inicializar Analizador")
     print("2- Cargar información de accidentes")
-    print("3- Requerimento 1")
-    print("4- Requerimento 2")
+    print("3- Accidentes ocurridos en una fecha especifica")
+    print("4- Accidentes ocurridos antes de una fecha")
+    print("5- Prueba")
     print("0- Salir")
     print("*******************************************")
-
-
 """
 Menu principal
 """
@@ -70,15 +69,71 @@ while True:
         cont = controller.init()
 
     elif int(inputs[0]) == 2:
-        print("\nCargando información de crimenes ....")
-
+        print("\nCargando información de accidentes ....")
+        controller.loadData(cont, accident_file)
+        print('Accidentes cargados: ' + str(controller.getAccidentsSize(cont)))
+        
     elif int(inputs[0]) == 3:
-        print("\nBuscando crimenes en un rango de fechas: ")
-
+        print("\nBuscando accidentes en un rango de fechas: ")
+        Fecha = input('Ingrese la fecha sobre la cual desea saber cuantos accidentes hubo: ')
+        print(controller.getAccidentsByDate(cont, Fecha))
 
     elif int(inputs[0]) == 4:
-        print("\nRequerimiento No 1 del reto 3: ")
-
+        print("\nBuscando accidentes anteriores a una fecha: ")
+        Fecha = input('Ingrese una fecha para saber la cantidad de accidentes y el día con más accidentes anteriores a esa fecha: ')
+        print(controller.getAccidentsBeforeADate(cont, Fecha))
+        
+    elif int(inputs[0]) == 5:
+        print(controller.prueba(cont))
     else:
         sys.exit(0)
+        
 sys.exit(0)
+
+
+
+
+
+
+
+def AccidentsInRange(analyzer, fecha_ini, fecha_fin):
+    dictfechatot={'Total accidentes entre la fecha ingresa:':None,
+                  'Categoría más reportada:':None}
+    fechauno=datetime.datetime.strptime(fecha_ini,'%Y-%m-%d')
+    fechados=datetime.datetime.strptime(fecha_fin,'%Y-%m-%d')
+    fecha_menor=str(om.minKey(analyzer['dateIndex']))
+    fecha_min=datetime.datetime.strptime(fecha_menor,'%Y-%m-%d')
+    if fecha_min>fechados:
+        return "No hay fechas anteriores a la ingresada"
+    dategetter=om.values(analyzer['dateIndex'],fechauno.date(),fechados.date())
+    num_fechas=lt.size(dategetter)
+    i=1
+    num_mayor=0
+    total=0
+    category=0
+    categorias=[]
+    while i<=num_fechas:
+        elements=lt.getElement(dategetter,i)
+        lista=elements['lstaccidents']
+        num_accident=lt.size(lista)
+        total+=num_accident
+        categories=lt.getElement(lista,i)
+        categorias.append(categories['Severity'])   
+        if num_accident>num_mayor:
+                num_mayor=num_accident    
+        i += 1
+    category=max(categorias)
+    dictfechatot['Total accidentes entre la fecha ingresada:']=total
+    dictfechatot['Categoría más reportada:']=category
+    return dictfechatot
+
+def Accidentesporcategoria (analyzer, Tinit, Tfin):
+    dicc = {'1': None, '2': None, '3': None, '4': None}
+    t_min=datetime.datetime.strptime(Tinit,'%H:%M')
+    t_max=datetime.datetime.strptime(Tfin,'%H:%M')
+    dategetter=om.values(analyzer['hourIndex'],t_min.date(),t_max.date())
+    cantidad=lt.size(dategetter)
+    i=1
+    while i <=cantidad:
+        
+    return dicc
