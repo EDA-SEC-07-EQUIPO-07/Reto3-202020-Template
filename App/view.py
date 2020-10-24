@@ -78,6 +78,12 @@ while True:
         print("\nBuscando accidentes en un rango de fechas: ")
         Fecha = input('Ingrese la fecha sobre la cual desea saber cuantos accidentes hubo: ')
         print(controller.getAccidentsByDate(cont, Fecha))
+        
+    elif int(inputs[0]) == 6:
+        print("\nBuscando fecha con más accidentes reportados: ")
+        fechamin = input('Ingrese la fecha inicial: ')
+        fechamax = input('Ingrese la fecha final: ')
+        print(controller.getAccidentsByDate(cont, Fechamin, Fechamax))
 
     else:
         sys.exit(0)
