@@ -52,6 +52,7 @@ def printMenu():
     print("1- Inicializar Analizador")
     print("2- Cargar información de accidentes")
     print("3- Accidentes ocurridos en una fecha especifica")
+    print("6- Fecha con más accidentes reportados")
     print("0- Salir")
     print("*******************************************")
 
